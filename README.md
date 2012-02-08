@@ -24,16 +24,6 @@ networking features of the site.
     % ./script/plugin install git://github.com/sjlombardo/acts_as_network.git
     % rake doc:plugins
 ```
-
-## INSTALLATION (subversion, rails <= 2.0.2))
-
-```
-    % cd rails_project_path
-    % script/plugin source http://actsasnetwork.rubyforge.org/svn/plugins
-    % script/plugin install acts_as_network  
-    % rake doc:plugins 
-```
-
 ## GitHub
 
   http://github.com/sjlombardo/acts_as_network/tree/master
