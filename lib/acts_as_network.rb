@@ -209,7 +209,7 @@ module ActsAsNetwork
        # is true.
        #
        #   acts_as_network :friends, :through => :invites, :foreign_key => 'person_id', 
-       #                   :association_foreign_key => 'friend_id', :conditions => "is_accepted = 't'"
+       #                   :association_foreign_key => 'friend_id', [:conditions => "is_accepted = ?", true]
        #
        # The valid configuration options that can be passed to +acts_as_network+ follow:
        #
@@ -290,7 +290,7 @@ module ActsAsNetwork
        #   class Person < ActiveRecord::Base
        #     acts_as_network :friends
        #     acts_as_network :colleagues, :through => :invites, :foreign_key => 'person_id', 
-       #                     :conditions => ["is_accepted = 't'"]
+       #                     :conditions => ["is_accepted = ?", true]
        #     acts_as_union   :aquantainces, [:friends, :colleagues]
        #   end
        #

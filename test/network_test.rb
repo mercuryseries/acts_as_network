@@ -18,7 +18,7 @@ class Person < ActiveRecord::Base
   acts_as_network :contacts, :through => :invites
 
   # network relation through invotes with additional conditions
-  acts_as_network :acquaintances, :through => :invites, :conditions => ["invites.is_accepted = 't'"]
+  acts_as_network :acquaintances, :through => :invites, :conditions => ["invites.is_accepted = ?", true]
 
   # simple network relation through a has_and_belongs_to_many table
   acts_as_network :connections
@@ -30,7 +30,7 @@ class Person < ActiveRecord::Base
   # network relationship with has_many_through and overrides
   acts_as_network :colleagues, :through => :invites, 
                   :foreign_key => 'person_id', :association_foreign_key => 'person_id_target', 
-                  :conditions => ["is_accepted = 't'"]
+                  :conditions => ["is_accepted = ?", true]
 
   # simple usage of acts_as_union to combine friends and colleagues sets
   acts_as_union   :associates, [:friends, :colleagues]

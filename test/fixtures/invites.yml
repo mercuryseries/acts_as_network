@@ -14,12 +14,12 @@ helene_vincent:
   person_id: 0
   person_id_target: 2
   is_accepted: t
-  
+
 mary_stephen:
   id: 3
   person_id: 3
   person_id_target: 1
-  
+
 stephen_vincent:
   id: 4
   person_id: 1
