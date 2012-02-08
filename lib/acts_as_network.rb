@@ -1,3 +1,8 @@
+require "acts_as_network/version"
+
+module ActsAsNetwork
+  # Your code goes here...
+end
 #
 # ActsAsNetwork contains
 # * Zetetic::Acts::Network::ClassMethods - provides the actual acts_as_network ActiveRecord functionality
