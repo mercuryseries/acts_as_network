@@ -2,3 +2,4 @@ bin
 .bundle
 test/debug.log
 test/acts_as_network.test.db
+pkg
