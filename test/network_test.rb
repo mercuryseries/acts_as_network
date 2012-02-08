@@ -49,26 +49,27 @@ class Array
   end
 end
 
-class UnionCollectionTest < Test::Unit::TestCase
-  fixtures :shows, :channels
-  
-  def setup
-    @union = Zetetic::Acts::UnionCollection.new(
+class UnionCollectionTest < ActiveSupport::TestCase
+
+  setup :build_union
+
+  def build_union
+    @union = ActsAsNetwork::UnionCollection.new(
       channels(:discovery).shows,
       channels(:usa).shows,
       channels(:amc).shows
     )
   end
-  
+
   def test_union_non_collection
-    union = Zetetic::Acts::UnionCollection.new(
+    union = ActsAsNetwork::UnionCollection.new(
       Person.find(:all, :conditions => "id <= 1"),
       Person.find(:all, :conditions => "id >= 2 AND id <= 4"),
       Person.find(:all, :conditions => "id >= 5")
     )
     assert_equal 7, @union.size
   end
-  
+
   def test_standard_finder
     set = channels(:usa).shows
     assert_equal "Monk", set.find_by_name("Monk").name
@@ -76,47 +77,47 @@ class UnionCollectionTest < Test::Unit::TestCase
         :first, :conditions => "channel_id = 1", 
         :order => "name").name) # dynamic initial finder syntax
   end
-  
+
   def test_union_finder_all
     assert_equal 7, @union.size # check raw size of @union array
     assert_equal 7, @union.find(:all).size # verify size returned from finder
   end
-  
+
   def test_union_find_first
     assert_equal "Monk", @union.find_by_name("Monk").name # dynamic initial finder syntax
-    
+
     assert_equal 3, @union.find_all_by_channel_id(0).size # dynamic all finder
-    
+
     assert_equal("Mad Men", @union.find(
         :first, :conditions => "id = 6", 
         :order => "name").name) # dynamic initial finder syntax
-    
+
     assert_equal("Burn Notice", @union.find(
         :first, :conditions => "channel_id = 1", 
         :order => "name").name) # dynamic initial finder syntax
   end
-  
+
   def test_union_find_by_ids
     assert_equal 7, @union.find(0,1,2,3,4,5,6).size # find by ids accross muliple collections
     assert @union.find(0,1,2,3,4,5,6).kind_of?(Array)
     assert @union.find(0).kind_of?(Show)
     assert @union.find(0,0).kind_of?(Array)
     assert_equal 1, @union.find(0,0).size
-    
+
     begin # verify that find by id for an unknown id fails
       @union.find(2,3,4,900)
       fail "should have failed with ActiveRecord::RecordNotFound error"
     rescue ActiveRecord::RecordNotFound 
     end
-    
+
   end
-  
+
   def test_find_with_scope
     Show.send(:with_scope, :find => {:conditions => "channel_id = 1"}) do
       assert_not_nil @union.find(4)
       assert_not_nil @union.find_by_name("Monk")
       assert_not_nil @union.find(:first, :conditions => ["name = ?", "Psych"])
-      
+
       assert_nil @union.find(:first, :conditions => "id = 6", :order => "name")
       begin # verify that find by id for an out of scope id fails
         @union.find(2)
@@ -125,42 +126,42 @@ class UnionCollectionTest < Test::Unit::TestCase
       end
     end
   end
-  
+
   def test_empty_sets
-    assert_equal Zetetic::Acts::UnionCollection.new().size, 0
-    assert_equal Zetetic::Acts::UnionCollection.new().to_ary, []
-    assert_equal Zetetic::Acts::UnionCollection.new([],[]).size, 0
-    assert_equal Zetetic::Acts::UnionCollection.new([],[]).to_ary, []
-    assert_equal Zetetic::Acts::UnionCollection.new(nil,nil).size, 0
-    assert_equal Zetetic::Acts::UnionCollection.new(nil,nil).to_ary, []
-    assert_equal Zetetic::Acts::UnionCollection.new([],nil).size, 0
-    assert_equal Zetetic::Acts::UnionCollection.new([],nil).to_ary, []
+    assert_equal ActsAsNetwork::UnionCollection.new().size, 0
+    assert_equal ActsAsNetwork::UnionCollection.new().to_ary, []
+    assert_equal ActsAsNetwork::UnionCollection.new([],[]).size, 0
+    assert_equal ActsAsNetwork::UnionCollection.new([],[]).to_ary, []
+    assert_equal ActsAsNetwork::UnionCollection.new(nil,nil).size, 0
+    assert_equal ActsAsNetwork::UnionCollection.new(nil,nil).to_ary, []
+    assert_equal ActsAsNetwork::UnionCollection.new([],nil).size, 0
+    assert_equal ActsAsNetwork::UnionCollection.new([],nil).to_ary, []
   end
-  
+
   def test_mixed_sets
-    union = Zetetic::Acts::UnionCollection.new(
+    union = ActsAsNetwork::UnionCollection.new(
       channels(:discovery).shows, # one populated set
       channels(:discovery).shows.find_all_by_name("does not exist"),
       nil
     )
-    
+
     assert_equal "Dirty Jobs", union.find_by_name('Dirty Jobs').name
     assert_equal channels(:discovery).shows.size, union.size
   end
-  
+
   def test_unique
     # adding the same set twice should not affect the size of the union
     # collection or the results that are returned (no duplicates)
-    union = Zetetic::Acts::UnionCollection.new(
+    union = ActsAsNetwork::UnionCollection.new(
       channels(:discovery).shows, 
       channels(:discovery).shows
     )
-    
+
     assert_equal "Dirty Jobs", union.find_by_name('Dirty Jobs').name
     assert_equal channels(:discovery).shows.size, union.size
     assert_equal channels(:discovery).shows.size, union.find(:all).size
   end
-  
+
   def test_lazy_load
     # internal array should start out nil
     assert_nil @union.instance_variable_get(:@arr)
@@ -175,18 +176,14 @@ class UnionCollectionTest < Test::Unit::TestCase
   end
 end
 
-class ActsAsUntionTest < Test::Unit::TestCase
-  fixtures :shows, :channels
-  
+class ActsAsUnionTest < ActiveSupport::TestCase
   def test_union_method
     assert_equal 0, channels(:abc).pay_shows.length
     assert_equal 3, channels(:discovery).pay_shows.length
   end
 end
 
-class ActsAsNetworkTest < Test::Unit::TestCase
-  fixtures :people, :people_people, :invites
-
+class ActsAsNetworkTest < ActiveSupport::TestCase
   def test_habtm_assignments
     jane = Person.create(:name => 'Jane')
     jack = Person.create(:name => 'Jack')

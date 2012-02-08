@@ -318,3 +318,6 @@ module ActsAsNetwork
     end
   end
 end
+
+ActiveRecord::Base.send :include, ActsAsNetwork::Network
+ActiveRecord::Base.send :include, ActsAsNetwork::Union
