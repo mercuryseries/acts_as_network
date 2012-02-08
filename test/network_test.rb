@@ -13,28 +13,28 @@ end
 
 
 class Person < ActiveRecord::Base
-  
+
   # network relationship using has_many :through invites
   acts_as_network :contacts, :through => :invites
-  
+
   # network relation through invotes with additional conditions
   acts_as_network :acquaintances, :through => :invites, :conditions => ["invites.is_accepted = 't'"]
-  
+
   # simple network relation through a has_and_belongs_to_many table
   acts_as_network :connections
-  
+
   # network relations has_and_belongs_to_many with custom table and foreign_key names
   acts_as_network :friends, :join_table => :friends, :foreign_key => 'person_id', 
                   :association_foreign_key => 'person_id_friend'
-  
+
   # network relationship with has_many_through and overrides
   acts_as_network :colleagues, :through => :invites, 
                   :foreign_key => 'person_id', :association_foreign_key => 'person_id_target', 
                   :conditions => ["is_accepted = 't'"]
-                  
+
   # simple usage of acts_as_union to combine friends and colleagues sets
   acts_as_union   :associates, [:friends, :colleagues]
-                                 
+
 end
 
 class Invite < ActiveRecord::Base
@@ -165,11 +165,11 @@ class UnionCollectionTest < ActiveSupport::TestCase
   def test_lazy_load
     # internal array should start out nil
     assert_nil @union.instance_variable_get(:@arr)
-    
+
     # finder operations shouldn't affect state
     @union.find(0)
     assert_nil @union.instance_variable_get(:@arr)
-    
+
     # array operations should cause data load
     @union.collect{|a| a}
     assert !@union.instance_variable_get(:@arr).empty?
@@ -187,26 +187,26 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
   def test_habtm_assignments
     jane = Person.create(:name => 'Jane')
     jack = Person.create(:name => 'Jack')
-    
+
     [jane, jack].each do |person|
       assert person.respond_to?(:friends)
       assert person.respond_to?(:friends_out)
       assert person.respond_to?(:friends_in)
     end
-    
+
     jane.friends_in << jack             # Jane adds Jack as a friend
-    
+
     assert jane.friends_in.include?(jack)
     assert jane.friends.include?(jack)  # Jack is Janes friend
-    
+
     assert jack.friends_out.include?(jane)
     assert jack.friends.include?(jane)  # Jane is also Jack's friend!
   end
-  
+
   def test_hmt_assignments
     jane = Person.create(:name => 'Jane')
     jack = Person.create(:name => 'Jack')
-    
+
     [jane, jack].each do |person|
       assert person.respond_to?(:colleagues)
       assert person.respond_to?(:invites_out)
@@ -214,33 +214,33 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
       assert person.respond_to?(:colleagues_out)
       assert person.respond_to?(:colleagues_in)
     end
-    
+
     # Jane invites Jack to be friends
-    invite = Invite.create(:person => jane, :person_target => jack, :message => "let's be friends!")    
-    
+    invite = Invite.create(:person => jane, :person_target => jack, :message => "let's be friends!")
+
     assert jane.invites_out.include?(invite)
     assert jack.invites_in.include?(invite)
-    
+
     assert !jane.colleagues.include?(jack)  # Jack is not yet Jane's friend
     assert !jack.colleagues.include?(jane)  # Jane is not yet Jack's friend either
 
     invite.is_accepted = true  # Now Jack accepts the invite
     invite.save
-    
+
     jane.reload and jack.reload
-    
+
     assert jane.colleagues.include?(jack)  # Jack is Janes friend now
     assert jack.colleagues.include?(jane)  # Jane is also Jacks friend
   end
-  
+
   def test_assigments_conditions
     jane = Person.create(:name => 'Jane')
     jack = Person.create(:name => 'Jack')
     alex = Person.create(:name => 'Alex')
-    
+
     # Jane invited Jack to be friends
     invite = Invite.create(:person => jane, :person_target => jack, :message => "let's be friends!", :is_accepted => true)
-    
+
     # Jack invited Alex to be friends
     invite = Invite.create(:person => jack, :person_target => alex, :message => "let's be friends!", :is_accepted => true)
 
@@ -248,7 +248,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
 
     assert_equal [alex].to_ary, jack.colleagues.find(:all, :conditions => { :name => "Alex" }).to_ary
   end
-  
+
   def test_outbound_habtm
     assert_equal 2, people(:helene).connections_out.size
     assert_equal 1, people(:mary).connections_out.size
@@ -256,7 +256,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 0, people(:vincent).connections_out.size
     assert_equal 1, people(:carmen).connections_out.size
   end
-  
+
   def test_outbound_hmt
     assert_equal 2, people(:helene).contacts_out.size
     assert_equal 1, people(:mary).contacts_out.size
@@ -264,7 +264,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 0, people(:vincent).contacts_out.size
     assert_equal 1, people(:carmen).contacts_out.size
   end
-  
+
   def test_conditional_outbound_hmt
     assert_equal 1, people(:helene).acquaintances_out.size
     assert_equal 0, people(:mary).acquaintances_out.size
@@ -280,7 +280,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 2, people(:vincent).connections_in.size
     assert_equal 0, people(:carmen).connections_in.size
   end
-  
+
   def test_inbound_hmt
     assert_equal 1, people(:helene).contacts_in.size
     assert_equal 0, people(:mary).contacts_in.size
@@ -288,7 +288,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 2, people(:vincent).contacts_in.size
     assert_equal 0, people(:carmen).contacts_in.size
   end
-  
+
   def test_conditional_inbound_hmt
     assert_equal 1, people(:helene).acquaintances_in.size
     assert_equal 0, people(:mary).acquaintances_in.size
@@ -296,7 +296,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 1, people(:vincent).acquaintances_in.size
     assert_equal 0, people(:carmen).acquaintances_in.size
   end
-  
+
   def test_union_habtm
     assert_equal 3, people(:helene).connections.size
     assert_equal 1, people(:mary).connections.size
@@ -304,7 +304,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 2, people(:vincent).connections.size
     assert_equal 1, people(:carmen).connections.size
   end
-  
+
   def test_union_hmt
     assert_equal 3, people(:helene).contacts.size
     assert_equal 1, people(:mary).contacts.size
@@ -312,7 +312,7 @@ class ActsAsNetworkTest < ActiveSupport::TestCase
     assert_equal 2, people(:vincent).contacts.size
     assert_equal 1, people(:carmen).contacts.size
   end
-  
+
   def test_conditional_union_hmt
     assert_equal 2, people(:helene).acquaintances.size
     assert_equal 0, people(:mary).acquaintances.size
