@@ -13,8 +13,8 @@ a "friend" relationship in one direction implies the reverse
 relationship (when Jack is a friend of Jane then Jane should also
 be a friend of Jack). 
 
-{Zetetic LLC}[http://www.zetetic.net] extracted acts_as_network from
-PingMe[http://www.gopingme.com] where it drives the social 
+[Zetetic LLC](http://www.zetetic.net) extracted `acts_as_network` from
+[PingMe](http://www.gopingme.com) where it drives the social 
 networking features of the site.
 
 ## INSTALLATION (git on edge rails)
@@ -55,15 +55,15 @@ make a relationship bi-directional
 ```ruby
   jane = Person.create(:name => 'Jane')
   jack = Person.create(:name => 'Jack')
-  
-  jane.friends << jack              # Jack is Janes friend
-  jane.friends.include?(jack)    =>  true
+
+  jane.friends << jack          # Jack is Janes friend
+  jane.friends.include?(jack)   # => true
 ```
 
 Clearly Jack is Jane's friend, yet Jane is *not* Jack's friend
 
 ```ruby
-  jack.friends.include?(jane)    => false
+  jack.friends.include?(jane)   # => false
 ```
 
 unless you need to explicitly define the reverse relation
@@ -115,14 +115,14 @@ In this case `acts_as_network` will expose three new properies
 on the Person model
 
 ```ruby
-  me.friends_out        # friends where I have originated the friendship relationship 
-                        # target in another entry (people I consider friends)
+  me.friends_out    # friends where I have originated the friendship
+                    # (people I consider friends)
 
-  me.friends_in         # friends where a different entry has originated the freindship 
-                        # with me (people who consider me a friend)
+  me.friends_in     # friends where they originated the friendship
+                    # (people who consider me a friend)
 
-  me.friends            # the union of the two sets, that is all people who I consider 
-                        # friends and all those who consider me a friend
+  me.friends        # the union of the two sets, that is all people who I consider
+                    # friends and all those who consider me a friend
 ```
 
 Thus
@@ -149,8 +149,7 @@ one person will "invite" another person to be friends.
   end
 
   class Person < ActiveRecord::Base
-    acts_as_network :friends, :through => :invites, [:conditions =>
-"is_accepted = ?", true]
+    acts_as_network :friends, :through => :invites, [:conditions => "is_accepted = ?", true]
   end
 ```
 
@@ -173,19 +172,19 @@ Thus
   jack = Person.create(:name => 'Jack')
 
   # Jane invites Jack to be friends
-  invite = Invite.create(:person => jane, :person_target => jack, :message => "let's be friends!")    
-  
+  invite = Invite.create(:person => jane, :person_target => jack, :message => "let's be friends!")
+
   jane.friends.include?(jack)    =>  false   # Jack is not yet Jane's friend
   jack.friends.include?(jane)    =>  false   # Jane is not yet Jack's friend either
 
   invite.is_accepted = true  # Now Jack accepts the invite
   invite.save and jane.reload and jack.reload
 
-  jane.friends.include?(jack)    =>  true   # Jack is Janes friend now
-  jack.friends.include?(jane)    =>  true   # Jane is also Jacks friend
+  jane.friends.include?(jack)    =>  true   # Jack is Jane's friend now
+  jack.friends.include?(jane)    =>  true   # Jane is also Jack's friend
 ```
 
-For more details and specific options see `Zetetic::Acts::Network::ClassMethods`
+For more details and specific options see `ActsAsNetwork::Network::ClassMethods`
 
 The applications of this plugin to social network situations are fairly obvious,
 but it should also be usable in the general case to represent inherant 
