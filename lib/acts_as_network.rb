@@ -1,4 +1,5 @@
 require "acts_as_network/version"
+require "active_record"
 
 #
 # ActsAsNetwork contains
