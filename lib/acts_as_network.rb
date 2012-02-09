@@ -263,7 +263,9 @@ module ActsAsNetwork
            # records. i.e. if People acts_as_network :contacts :through => :invites, this method
            # is defined as def invites
            class_eval <<-EOV
-             acts_as_union :#{through_sym}, [ :#{through_sym}_in, :#{through_sym}_out ]
+             ActiveRecord::Base.connection.uncached do
+               acts_as_union :#{through_sym}, [ :#{through_sym}_in, :#{through_sym}_out ]
+             end
            EOV
 
          end
@@ -271,7 +273,9 @@ module ActsAsNetwork
          # define the accessor method for the reciprocal network relationship view itself. 
          # i.e. if People acts_as_network :contacts, this method is defind as def contacts
          class_eval <<-EOV
-           acts_as_union :#{relationship}, [ :#{relationship}_in, :#{relationship}_out ]
+           ActiveRecord::Base.connection.uncached do
+             acts_as_union :#{relationship}, [ :#{relationship}_in, :#{relationship}_out ]
+           end
          EOV
        end
      end
@@ -311,7 +315,9 @@ module ActsAsNetwork
          # i.e. if People acts_as_union :jobs, this method is defined as def jobs
          class_eval <<-EOV
            def #{relationship}
-             UnionCollection.new(#{methods.collect{|m| "self.#{m.to_s}"}.join(',')})
+             ActiveRecord::Base.connection.uncached do
+               UnionCollection.new(#{methods.collect{|m| "self.#{m.to_s}"}.join(',')})
+             end
            end
          EOV
        end
