@@ -2,15 +2,15 @@
 
 This gem is intended to simplify the definition 
 and storage of reciprocal relationships between entities using
-`ActiveRecord`, exposing a "network" of 2-way connections between
+`ActiveRecord`, exposing a "network" of two-way connections between
 records. It does this in DRY way using only **a single record**
 in a `has_and_belongs_to_many` join table or `has_many :through` 
 join model. Thus, there is no redundancy and you need only one instance of 
 an association or join model to represent both directions of the relationship.
 
 This is especially useful for social networks where 
-a "friend" relationship in one direction implies the reverse 
-relationship (when Jack is a friend of Jane then Jane should also
+a *friend* relationship in one direction implies the reverse
+relationship (when Jack is a friend of Jane, Jane should also
 be a friend of Jack). 
 
 ## History
@@ -27,7 +27,7 @@ fork](https://github.com/erikh/acts_as_network/commits/rails3/lib/zetetic/acts)
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's `Gemfile`:
 
     gem 'acts_as_network'
 
@@ -57,7 +57,7 @@ The original project is here:
 
 The usual way of representing network relationships in a database is 
 to use an intermediate, often self-referential, join table (HABTM). 
-For example one might define a simple person type
+For example one might define a simple `Person` type
 
 ```ruby
   create_table :people, :force => true do |t|
@@ -74,14 +74,14 @@ and then a join table to store the friendship relation
   end
 ```
 
-Unfortunately this model requires TWO rows in the intermediate table to
+Unfortunately this model requires *two* rows in the intermediate table to
 make a relationship bi-directional
 
 ```ruby
   jane = Person.create(:name => 'Jane')
   jack = Person.create(:name => 'Jack')
 
-  jane.friends << jack          # Jack is Janes friend
+  jane.friends << jack          # Jack is Jane's friend
   jane.friends.include?(jack)   # => true
 ```
 
