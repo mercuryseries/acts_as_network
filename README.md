@@ -1,8 +1,8 @@
 # acts_as_network
 
-acts_as_network is intended to simplify the definition 
+This gem is intended to simplify the definition 
 and storage of reciprocal relationships between entities using
-ActiveRecord, exposing a "network" of 2-way connections between
+`ActiveRecord`, exposing a "network" of 2-way connections between
 records. It does this in DRY way using only **a single record**
 in a `has_and_belongs_to_many` join table or `has_many :through` 
 join model. Thus, there is no redundancy and you need only one instance of 
@@ -13,22 +13,47 @@ a "friend" relationship in one direction implies the reverse
 relationship (when Jack is a friend of Jane then Jane should also
 be a friend of Jack). 
 
+## History
+
 [Zetetic LLC](http://www.zetetic.net) extracted `acts_as_network` from
 [PingMe](http://www.gopingme.com) where it drives the social 
 networking features of the site.
 
-## INSTALLATION (git on edge rails)
+[ExamTime](http://www.examtime.com) forked the project in February 2012
+to repackage it from a Rails 2 plugin to a Rails 3 gem. Minimal code
+changes have been made. Significant changes were pulled in from
+[Erik Hollensbe's
+fork](https://github.com/erikh/acts_as_network/commits/rails3/lib/zetetic/acts)
 
-```
-    % cd rails_project_path
-    % ./script/plugin install git://github.com/sjlombardo/acts_as_network.git
-    % rake doc:plugins
-```
-## GitHub
+## Installation
 
+Add this line to your application's Gemfile:
+
+    gem 'acts_as_network'
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
+    $ gem install acts_as_network
+
+## Contributing
+
+This fork is maintained on GitHub:
+  git@github.com:ExamTime/acts_as_network.git
+
+The original project is here:
   http://github.com/sjlombardo/acts_as_network/tree/master
 
-# INTRODUCTION
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Added some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create new Pull Request
+
+## Usage
 
 The usual way of representing network relationships in a database is 
 to use an intermediate, often self-referential, join table (HABTM). 
@@ -94,14 +119,14 @@ In this case creating a reverse relationship is painful, and depending on
 validations might require the duplication of multiple values, making the
 data model decidedly un-DRY.
 
-## Using acts_as_network
+### Using acts_as_network
 
 Acts As Network DRYs things up by representing only a single record
 in a `has_and_belongs_to_many` join table or `has_many :through` 
 join model. Thus, you only need one instance of an association or join model to
 represent both directions of the relationship.
 
-## With HABTM
+### With HABTM
 
 For a HABTM style relationship, it's as simple as
 
@@ -136,7 +161,7 @@ Thus
   jack.friends.include?(jane)    =>  true   # Jane is also Jack's friend!
 ```
 
-## With a join model
+### With a join model
 
 This may seem more natural when considering a join style with a proper Invite model. In this case
 one person will "invite" another person to be friends.
@@ -153,16 +178,16 @@ one person will "invite" another person to be friends.
   end
 ```
 
-In this case `acts_as_network` implicitly defines five new properies
-on the Person model
+In this case `acts_as_network` implicitly defines five new properties on
+the `Person` model:
 
 ```ruby
-  person.invites_out        # has_many invites originating from me to others
-  person.invites_in         # has_many invites orginiating from others to me
-  person.friends_out        # has_many friends :through outbound accepted invites from me to others
-  person.friends_in         # has_many friends :through inbound accepted invites from others to me
-  person.friends            # the union of the two friend sets - all people who I have
-                            # invited and all the people who have invited me
+  person.invites_out      # has_many invites originating from me to others
+  person.invites_in       # has_many invites orginiating from others to me
+  person.friends_out      # has_many friends :through outbound accepted invites from me to others
+  person.friends_in       # has_many friends :through inbound accepted invites from others to me
+  person.friends          # the union of the two friend sets - all people who I have
+                          # invited and all the people who have invited me
 ```
 
 Thus
@@ -190,7 +215,7 @@ The applications of this plugin to social network situations are fairly obvious,
 but it should also be usable in the general case to represent inherant 
 bi-directional relationships between entities.
 
-# TESTS
+## Tests
 
 The plugin's unit tests are located in `test` directory under 
 `vendor/plugins/acts_as_network`. Run:
@@ -208,30 +233,4 @@ when you are done.
   [%] rm acts_as_network.test.db
 ```
 
-The test suite requires sqlite3. 
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-    gem 'acts_as_network'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install acts_as_network
-
-## Usage
-
-TODO: Write usage instructions here
-
-## Contributing
-
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Added some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+The test suite requires `sqlite3`.
