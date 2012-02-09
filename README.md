@@ -215,6 +215,45 @@ The applications of this plugin to social network situations are fairly obvious,
 but it should also be usable in the general case to represent inherant 
 bi-directional relationships between entities.
 
+#### Migrations
+
+This Gem does not attempt to help you write your migrations. For the
+join example above, the changes to the model and the corresponding
+migrations would be:
+
+```ruby
+class Person < ActiveRecord::Base
+  ...
+  acts_as_network :friends,
+    :through => :invites,
+    :conditions => [ "is_accepted = ?", true ],
+    :association_foreign_key => "person_target_id"
+```
+
+```ruby
+class CreateInvite < ActiveRecord::Migration
+  def change
+    create_table :invites do |t|
+      t.integer :person_id
+      t.integer :person_target_id
+      t.text    :message
+      t.boolean :is_accepted
+      t.timestamps
+    end
+  end
+end
+
+class CreateFriends < ActiveRecord::Migration
+  def change
+    create_table :friends do |t|
+      t.integer :person_id
+      t.integer :person_id_friend
+      t.timestamps
+      end
+  end
+end
+```
+
 ## Tests
 
 The plugin's unit tests are located in `test` directory under 
