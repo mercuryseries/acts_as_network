@@ -82,10 +82,12 @@ module ActsAsNetwork
      #   union.find(:first, :conditions => ["name = ?", "George"])
      #
      def find(*args)
-       case args.first
-         when :first then find_initial(:find, *args)
-         when :all   then find_all(:find, *args)
-         else             find_from_ids(:find, *args)
+       ActiveRecord::Base.connection.uncached do
+         case args.first
+           when :first then find_initial(:find, *args)
+           when :all   then find_all(:find, *args)
+           else             find_from_ids(:find, *args)
+         end
        end
      end
 
